@@ -1,20 +1,25 @@
-const path = require('path');
-const CopyWebpackPlugin = require('copy-webpack-plugin');
+const path = require('path')
+const CopyWebpackPlugin = require('copy-webpack-plugin')
+const MiniCssExtractPlugin = require('mini-css-extract-plugin')
+const WebpackShellPlugin = require('webpack-shell-plugin-next');
+
+
 
 module.exports = {
   entry: {
-    'SlVueTree': './src/sl-vue-tree.vue'
+    'sl-vue-tree': './src/sl-vue-tree.vue',
+    'sl-vue-tree-minimal': './src/style/sl-vue-tree-minimal.scss',
+    'sl-vue-tree-dark': './src/style/sl-vue-tree-dark.scss'
   },
   output: {
     path: __dirname + '/dist',
-    filename: 'sl-vue-tree.js',
+    filename: '[name].js',
     library: 'SlVueTree',
     libraryTarget: 'umd',
     libraryExport: 'default'
   },
 
   devtool: 'sourcemap',
-
 
   resolve: {
     extensions: ['.js'],
@@ -52,6 +57,10 @@ module.exports = {
           publicPath: 'bundles/media/'
         }
       },
+      {
+        test: /\.scss$/,
+        use: [MiniCssExtractPlugin.loader, 'css-loader', 'sass-loader'],
+      },
       // Handles custom fonts. Currently used for icons.
       {
         test: /\.woff$/,
@@ -66,9 +75,25 @@ module.exports = {
   },
 
   plugins: [
+    new MiniCssExtractPlugin({
+      // Options similar to the same options in webpackOptions.output
+      // both options are optional
+      filename: '[name].css',
+      chunkFilename: '[id].css'
+    }),
     new CopyWebpackPlugin([
-      { from: 'src/*.css', to: '[name].css'},
-      { from: 'src/*.d.ts', to: '[name].ts'}
-    ])
+      // TODO enable ts
+      {from: 'src/*.d.ts', to: '[name].ts'}
+    ]),
+    new WebpackShellPlugin({
+      onBuildEnd:{
+        scripts: [
+          'rm -f ./dist/sl-vue-tree-minimal.js ./dist/sl-vue-tree-minimal.js.map',
+          'rm -f ./dist/sl-vue-tree-dark.js ./dist/sl-vue-tree-dark.js.map',
+        ],
+        blocking: false,
+        parallel: false
+      }
+    })
   ]
-};
+}

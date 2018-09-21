@@ -1,10 +1,16 @@
 <template>
   <div
       class="sl-vue-tree"
-      :class="{'sl-vue-tree-root': isRoot }"
+      :class="{
+      'sl-vue-tree-root': isRoot,
+      'sl-vue-tree-drop-forbidden': isDragging && !dropAllow,
+      'sl-vue-tree-drop-move': isDragging && dropMove,
+      'sl-vue-tree-drop-copy': isDragging && dropCopy,
+      }"
       @mousemove="onMousemoveHandler"
       @mouseleave="onMouseleaveHandler"
       @dragend="onDragendHandler(null, $event)"
+
   >
     <div ref="nodes" class="sl-vue-tree-nodes-list">
       <div
@@ -45,7 +51,7 @@
               cursorPosition.placement === 'inside' &&
               cursorPosition.node.pathStr === node.pathStr,
             'sl-vue-tree-node-is-leaf' : node.isLeaf,
-            'sl-vue-tree-node-is-folder' : !node.isLeaf
+            'sl-vue-tree-node-is-folder' : !node.isLeaf,
           }"
         >
           <div class="sl-vue-tree-gap" v-for="gapInd in gaps"></div>

@@ -7,6 +7,8 @@ export interface ISlTreeNodeModel<TDataType> {
     isSelected?: boolean;
     isDraggable?: boolean;
     isSelectable?: boolean;
+    isAllowDrag?: boolean;
+    isAllowDrop?: boolean;
     data?: TDataType;
 }
 export interface ISlTreeNode<TDataType> extends ISlTreeNodeModel<TDataType> {

@@ -1,7 +1,17 @@
 .sl-vue-tree {
     position: relative;
-    cursor: default;
     user-select: none;
+
+    &.sl-vue-tree-drop-move {
+        cursor: move;
+        cursor: grabbing;
+    }
+    &.sl-vue-tree-drop-copy {
+        cursor: copy;
+    }
+    &.sl-vue-tree-drop-forbidden {
+        cursor: no-drop;
+    }
 }
 
 .sl-vue-tree-root > .sl-vue-tree-nodes-list {

@@ -61,6 +61,8 @@ interface ISlTreeNodeModel<TDataType> {
     isSelected?: boolean;
     isDraggable?: boolean;
     isSelectable?: boolean;
+    isAllowDrag?: boolean;
+    isAllowDrop?: boolean;
     data?: TDataType; // any serializable user data
 }
 ````
@@ -94,6 +96,8 @@ You can get the list of `ISlTreeNode` from the computed `slVueTree.nodes` proper
 | scrollAreaHeight | Number             | 70                     | Offset in pixels from top and bottom for the component element. While dragging cursor is in that area, the scrolling starts.                                                                                |
 | maxScrollSpeed   | Number             | 20                     | The scroll speed is relative to the cursor position. Defines the max scroll speed.             
 | multiselectKey   | string|string[]    | ['ctrlKey', 'metaKey'] | The keys for multiselect mode. Allowed values are ['ctrlKey', 'metaKey', 'altKey']   
+| allowDrag        | function(draggingNodes: ISlTreeNode[], event: MouseEvent )           | undefined              |  check drag permission
+| allowDrop        | function(draggingNodes: ISlTreeNode[], position: ICursorPosition, event: MouseEvent )           | undefined           | check drop permission   | 
 
 # Computed props
 
@@ -140,6 +144,8 @@ interface ICursorPosition<TDataType> {
 | getLastNode(): ISlTreeNode                                                                               | Get the last node in the tree
 | getNextNode(path: number[], filter?: (node: ISlTreeNode<TDataType>) => boolean): ISlTreeNode<TDataType>; | Get the next node. You can skip the next nodes by using `filter`
 | getPrevNode(path: number[], filter?: (node: ISlTreeNode<TDataType>) => boolean): ISlTreeNode<TDataType>; | Get the previous node. You can skip the previous nodes by using `filter`
+| getParentNode(path: number[]): ISlTreeNode<TDataType>;                                                   | Get parent node
+| getParentNodes(path: number[]): ISlTreeNode<TDataType>[];                                                | Get parent nodes
 
 # Slots
 

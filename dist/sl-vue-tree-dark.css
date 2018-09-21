@@ -1,75 +1,85 @@
 .sl-vue-tree {
-    position: relative;
-    cursor: default;
-    user-select: none;
-}
-
-.sl-vue-tree.sl-vue-tree-root {
-    border: 1px solid rgb(9, 22, 29);
-    background-color: rgb(9, 22, 29);
-    color: rgba(255, 255, 255, 0.5);
-    border-radius: 3px;
-}
+  position: relative;
+  user-select: none; }
+  .sl-vue-tree.sl-vue-tree-drop-move {
+    cursor: move;
+    cursor: grabbing; }
+  .sl-vue-tree.sl-vue-tree-drop-copy {
+    cursor: copy; }
+  .sl-vue-tree.sl-vue-tree-drop-forbidden {
+    cursor: no-drop; }
 
 .sl-vue-tree-root > .sl-vue-tree-nodes-list {
-    overflow: hidden;
-    position: relative;
-    padding-bottom: 4px;
-}
+  overflow: hidden;
+  position: relative;
+  padding-bottom: 4px; }
 
 .sl-vue-tree-selected > .sl-vue-tree-node-item {
-    background-color: #13242d;
-    color: white;
-}
+  background-color: rgba(100, 100, 255, 0.5); }
+
+.sl-vue-tree-node-list {
+  position: relative;
+  display: flex;
+  flex-direction: row; }
+
+.sl-vue-tree-node-item {
+  position: relative;
+  display: flex;
+  flex-direction: row; }
+
+.sl-vue-tree-node-item.sl-vue-tree-cursor-inside {
+  outline: 1px solid rgba(100, 100, 255, 0.5); }
+
+.sl-vue-tree-gap {
+  width: 20px;
+  min-height: 1px; }
+
+.sl-vue-tree-sidebar {
+  margin-left: auto; }
+
+.sl-vue-tree-cursor {
+  position: absolute;
+  border: 1px solid rgba(100, 100, 255, 0.5);
+  height: 1px;
+  width: 100%; }
+
+.sl-vue-tree-drag-info {
+  position: absolute;
+  background-color: rgba(0, 0, 0, 0.5);
+  opacity: 0.5;
+  margin-left: 20px;
+  margin-bottom: 20px;
+  padding: 5px 10px; }
+
+.sl-vue-tree.sl-vue-tree-root {
+  border: 1px solid #09161d;
+  background-color: #09161d;
+  color: rgba(255, 255, 255, 0.5);
+  border-radius: 3px; }
+
+.sl-vue-tree-selected > .sl-vue-tree-node-item {
+  background-color: #13242d;
+  color: white; }
 
 .sl-vue-tree-node-item:hover,
 .sl-vue-tree-node-item.sl-vue-tree-cursor-hover {
-    color: white;
-}
-
-.sl-vue-tree-node-item {
-    position: relative;
-    display: flex;
-    flex-direction: row;
-
-    padding-left: 10px;
-    padding-right: 10px;
-    line-height: 28px;
-    border: 1px solid transparent;
-}
-
+  color: white; }
 
 .sl-vue-tree-node-item.sl-vue-tree-cursor-inside {
-    border: 1px solid rgba(255, 255, 255, 0.5);
-}
-
-.sl-vue-tree-gap {
-    width: 25px;
-    min-height: 1px;
-
-}
-
-.sl-vue-tree-toggle {
-    display: inline-block;
-    text-align: left;
-    width: 20px;
-}
-
-.sl-vue-tree-sidebar {
-    margin-left: auto;
-}
+  border: 1px solid rgba(255, 255, 255, 0.5); }
 
 .sl-vue-tree-cursor {
-    position: absolute;
-    border: 1px solid rgba(255, 255, 255, 0.5);
-    height: 1px;
-    width: 100%;
-}
+  position: absolute;
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  height: 1px;
+  width: 100%; }
 
 .sl-vue-tree-drag-info {
-    position: absolute;
-    background-color: rgba(0,0,0,0.5);
-    opacity: 0.5;
-    margin-left: 20px;
-    padding: 5px 10px;
-}
+  position: absolute;
+  background-color: rgba(0, 0, 0, 0.5);
+  opacity: 0.5;
+  margin-left: 20px;
+  padding: 5px 10px; }
+
+
+/*# sourceMappingURL=sl-vue-tree-dark.css.map*/
