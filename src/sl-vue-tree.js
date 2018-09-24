@@ -497,6 +497,9 @@ export default {
     },
 
     getParentNode (path) {
+      if (path.length === 1) {
+        return null // No parent, is root node
+      }
       return this.getNode(path.slice(0, path.length - 1))
     },
 
@@ -770,6 +773,10 @@ export default {
       }, newNodes)
 
       this.emitInput(newNodes)
+    },
+
+    removeNodes(paths) {
+      return this.remove(paths)
     },
 
     checkNodeIsParent (sourceNode, destNode) {
