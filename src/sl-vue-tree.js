@@ -24,6 +24,10 @@ export default {
       type: Boolean,
       default: true
     },
+    allowToggleBranch: {
+      type: Boolean,
+      default: true
+    },
     multiselectKey: {
       type: [String, Array],
       default: function () {
@@ -215,6 +219,10 @@ export default {
       this.getRoot().$emit('select', selectedNodes, event);
     },
 
+    emitBeforeDrop(draggingNodes, position, cancel) {
+      this.getRoot().$emit('beforedrop', draggingNodes, position, cancel);
+    },
+
     emitDrop(draggingNodes, position, event) {
       this.getRoot().$emit('drop', draggingNodes, position, event);
     },
@@ -393,7 +401,7 @@ export default {
 
     getCursorPositionFromCoords(x, y) {
       const $target = document.elementFromPoint(x, y);
-      const $nodeItem = $target.getAttribute('path') ? $target : $target.closest('[path]');
+      const $nodeItem = $target.getAttribute('path') ? $target : this.getClosetElementWithPath($target);
       let destNode;
       let placement;
 
@@ -431,6 +439,12 @@ export default {
       }
 
       return {node: destNode, placement};
+    },
+
+    getClosetElementWithPath($el) {
+      if (!$el) return null;
+      if ($el.getAttribute('path')) return $el;
+      return this.getClosetElementWithPath($el.parentElement);
     },
 
     onMouseleaveHandler(event) {
@@ -615,32 +629,36 @@ export default {
       }
 
       const newNodes = this.copy(this.currentValue);
-      const nodeModelsToInsert = [];
+      const nodeModelsSubjectToInsert = [];
 
-      // find and mark dragging model to delete
+      // find dragging model to delete
       for (let draggingNode of draggingNodes) {
         const sourceSiblings = this.getNodeSiblings(newNodes, draggingNode.path);
         const draggingNodeModel = sourceSiblings[draggingNode.ind];
-        nodeModelsToInsert.push(this.copy(draggingNodeModel));
-        draggingNodeModel['_copySource'] = this.dropCopy;
-        draggingNodeModel['_markToDelete'] = this.dropMove;
+        nodeModelsSubjectToInsert.push(draggingNodeModel);
+      }
+
+      // allow the drop to be cancelled
+      let cancelled = false;
+      this.emitBeforeDrop(draggingNodes, this.cursorPosition, () => cancelled = true);
+
+      if (cancelled) {
+          this.stopDrag();
+          return;
+      }
+
+      const nodeModelsToInsert = [];
+
+      // mark dragging model to delete
+      for (let draggingNodeModel of nodeModelsSubjectToInsert) {
+          nodeModelsToInsert.push(this.copy(draggingNodeModel));
+          draggingNodeModel['_markToDelete'] = this.dropMove;
+          draggingNodeModel['_copySource'] = this.dropCopy;
       }
 
       // insert dragging nodes to the new place
-      const destNode = this.cursorPosition.node;
-      const destSiblings = this.getNodeSiblings(newNodes, destNode.path);
-      const destNodeModel = destSiblings[destNode.ind];
+      this.insertModels(this.cursorPosition, nodeModelsToInsert, newNodes);
 
-      if (this.cursorPosition.placement === 'inside') {
-        destNodeModel.children = destNodeModel.children || [];
-        destNodeModel.children.unshift(...nodeModelsToInsert);
-      } else {
-        const insertInd = this.cursorPosition.placement === 'before' ?
-          destNode.ind :
-          destNode.ind + 1;
-
-        destSiblings.splice(insertInd, 0, ...nodeModelsToInsert);
-      }
 
       // delete dragging node from the old place
       this.traverseModels((nodeModel, siblings, ind) => {
@@ -660,7 +678,9 @@ export default {
     },
 
     onToggleHandler(event, node) {
-      this.updateNode(node.path, {isExpanded: !node.isExpanded});
+      if (!this.allowToggleBranch) return;
+
+      this.updateNode(node.path, { isExpanded: !node.isExpanded });
       this.emitToggle(node, event);
       event.stopPropagation();
     },
@@ -771,6 +791,32 @@ export default {
         if (!nodeModel._markToDelete) return;
         siblings.splice(ind, 1);
       }, newNodes);
+
+      this.emitInput(newNodes);
+    },
+
+    insertModels(cursorPosition, nodeModels, newNodes) {
+      const destNode = cursorPosition.node;
+      const destSiblings = this.getNodeSiblings(newNodes, destNode.path);
+      const destNodeModel = destSiblings[destNode.ind];
+
+      if (cursorPosition.placement === 'inside') {
+        destNodeModel.children = destNodeModel.children || [];
+        destNodeModel.children.unshift(...nodeModels);
+      } else {
+        const insertInd = cursorPosition.placement === 'before' ?
+          destNode.ind :
+          destNode.ind + 1;
+
+        destSiblings.splice(insertInd, 0, ...nodeModels);
+      }
+    },
+
+    insert(cursorPosition, nodeModel) {
+      const nodeModels = Array.isArray(nodeModel) ? nodeModel : [nodeModel];
+      const newNodes = this.copy(this.currentValue);
+
+      this.insertModels(cursorPosition, nodeModels, newNodes);
 
       this.emitInput(newNodes);
     },
